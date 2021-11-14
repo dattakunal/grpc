@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+service Ingest {
+    rpc Publish (PublishRequest) returns (PublishReply) {}
+    rpc PublishBulk (PublishBulkRequest) returns (PublishBulkResponse) {}
+}
+
+enum BulkStatus {
+    UNKOWN = 0;
+    SUCCESS = 1;
+    PARTIAL = 2;
+    FAILED = 3;
+}
+
+// Event is the datastructure which holds the event metadata.
+// Unless mentioned as "optional" the field is mandatory and
+// will be expected by the ingest service.
+message Event {
+    string id = 1; 
+    string event_payload = 12;
+
+
+}
+
+message PublishRequest {
+    Event event = 1;
+}
+
+message PublishBulkRequest{
+    repeated Event events = 1;
+}
+
+message PublishBulkResponse {
+    BulkStatus status = 1;
+    repeated PublishReply replies = 2;
+}
+message PublishReply {
+    bool success    = 1;
+    string message  = 2;
+    string id = 3;
+}
